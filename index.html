@@ -5,59 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý lịch học nhóm</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            text-align: center;
-            padding: 20px;
+    <script>
+        const SHEET_ID = "YOUR_SHEET_ID";
+        const API_KEY = "YOUR_GOOGLE_API_KEY";
+        const SHEET_NAME = "Sheet1"; // Tên sheet trong Google Sheets
+        
+        async function fetchEvents() {
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            renderEvents(data.values);
         }
-        .container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            margin: auto;
+        
+        async function addEvent() {
+            const date = document.getElementById('selectedDate').value;
+            const title = document.getElementById('eventTitle').value;
+            const person = document.getElementById('person').value;
+            
+            if (!date || !title.trim()) return;
+            
+            const values = [[date, person, title]];
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}:append?valueInputOption=RAW&key=${API_KEY}`;
+            
+            await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ values })
+            });
+            
+            fetchEvents(); // Cập nhật danh sách sau khi thêm
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+        
+        function renderEvents(data) {
+            const eventTableBody = document.getElementById('eventTableBody');
+            eventTableBody.innerHTML = '';
+            
+            const groupedEvents = {};
+            data.slice(1).forEach(([date, person, title]) => {
+                if (!groupedEvents[date]) {
+                    groupedEvents[date] = { "Person 1": "", "Person 2": "", "Person 3": "" };
+                }
+                groupedEvents[date][person] = title;
+            });
+            
+            Object.keys(groupedEvents).forEach(date => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${date}</td>
+                    <td>${groupedEvents[date]["Person 1"]}</td>
+                    <td>${groupedEvents[date]["Person 2"]}</td>
+                    <td>${groupedEvents[date]["Person 3"]}</td>
+                `;
+                eventTableBody.appendChild(row);
+            });
         }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 10px;
-            margin: 5px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-        input, select {
-            padding: 8px;
-            margin: 5px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-    </style>
+        
+        window.onload = fetchEvents;
+    </script>
 </head>
 <body>
     <div class="container">
@@ -84,64 +88,5 @@
             <tbody id="eventTableBody"></tbody>
         </table>
     </div>
-    
-    <script>
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            databaseURL: "YOUR_DATABASE_URL",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        function addEvent() {
-            const date = document.getElementById('selectedDate').value;
-            const title = document.getElementById('eventTitle').value;
-            const person = document.getElementById('person').value;
-            
-            if (date && title.trim()) {
-                const newEvent = { date, title, person };
-                database.ref('events/').push(newEvent);
-                document.getElementById('eventTitle').value = '';
-            }
-        }
-
-        function renderEvents(events) {
-            const eventTableBody = document.getElementById('eventTableBody');
-            eventTableBody.innerHTML = '';
-            
-            const groupedEvents = {};
-            events.forEach(event => {
-                if (!groupedEvents[event.date]) {
-                    groupedEvents[event.date] = { "Person 1": "", "Person 2": "", "Person 3": "" };
-                }
-                groupedEvents[event.date][event.person] = event.title;
-            });
-            
-            Object.keys(groupedEvents).forEach(date => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${date}</td>
-                    <td>${groupedEvents[date]["Person 1"]}</td>
-                    <td>${groupedEvents[date]["Person 2"]}</td>
-                    <td>${groupedEvents[date]["Person 3"]}</td>
-                `;
-                eventTableBody.appendChild(row);
-            });
-        }
-
-        database.ref('events/').on('value', (snapshot) => {
-            const events = [];
-            snapshot.forEach(childSnapshot => {
-                events.push(childSnapshot.val());
-            });
-            renderEvents(events);
-        });
-    </script>
 </body>
 </html>
