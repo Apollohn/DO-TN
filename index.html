@@ -1,13 +1,13 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý lịch học nhóm</title>
-    <link rel="stylesheet" href="styles.css">
-    <script>
+    <!DOCTYPE html>
+    <html lang="vi">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Quản lý lịch học nhóm</title>
+        <link rel="stylesheet" href="styles.css">
+        <script>
         const SHEET_ID = "11jpPXkZjQaqxC5BllbZ8qbnmH8qi4-dTc0_aUABDcow";
-        const API_KEY = "AIzaSyDMIloiaPGNpudYLsdmsipYXDmpar89Kq0";
+        const API_KEY = "AIzaSyDcfnm2-biGNgx2GjhU9Yh2XNObBWnjwUY";
         const SHEET_NAME = "1"; // Tên sheet trong Google Sheets
         
         async function fetchEvents() {
@@ -62,31 +62,82 @@
         
         window.onload = fetchEvents;
     </script>
-</head>
-<body>
-    <div class="container">
-        <h1>📅 Quản lý lịch học nhóm</h1>
-        <input type="date" id="selectedDate">
-        <input type="text" id="eventTitle" placeholder="Nhập nội dung học">
-        <select id="person">
-            <option value="Person 1">Người 1</option>
-            <option value="Person 2">Người 2</option>
-            <option value="Person 3">Người 3</option>
-        </select>
-        <button onclick="addEvent()">➕ Thêm sự kiện</button>
-        
-        <h2>📖 Lịch học</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Ngày</th>
-                    <th>Người 1</th>
-                    <th>Người 2</th>
-                    <th>Người 3</th>
-                </tr>
-            </thead>
-            <tbody id="eventTableBody"></tbody>
-        </table>
-    </div>
-</body>
-</html>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                text-align: center;
+                padding: 20px;
+            }
+            .container {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                max-width: 600px;
+                margin: auto;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            th, td {
+                padding: 10px;
+                border: 1px solid #ddd;
+                text-align: center;
+            }
+            th {
+                background-color: #4CAF50;
+                color: white;
+            }
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+            button {
+                background-color: #28a745;
+                color: white;
+                border: none;
+                padding: 10px;
+                margin: 5px;
+                cursor: pointer;
+                border-radius: 5px;
+            }
+            button:hover {
+                background-color: #218838;
+            }
+            input, select {
+                padding: 8px;
+                margin: 5px;
+                border-radius: 5px;
+                border: 1px solid #ccc;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>📅 Quản lý lịch học nhóm</h1>
+            <input type="date" id="selectedDate">
+            <input type="text" id="eventTitle" placeholder="Nhập nội dung học">
+            <select id="person">
+                <option value="Person 1">Lâm</option>
+                <option value="Person 2">Thiện</option>
+                <option value="Person 3">Hưng</option>
+            </select>
+            <button onclick="addEvent()">➕ Thêm sự kiện</button>
+            
+            <h2>📖 Lịch học</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ngày</th>
+                        <th>Lâm</th>
+                        <th>Thiện</th>
+                        <th>Hưng</th>
+                    </tr>
+                </thead>
+                <tbody id="eventTableBody"></tbody>
+            </table>
+        </div>
+    </body>
+    </html>
